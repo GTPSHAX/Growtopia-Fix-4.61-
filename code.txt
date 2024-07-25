@@ -34,3 +34,86 @@ else if (pInfo(peer)->tankIDName.empty()) {
 					}
 				}
 }
+
+2. Place after explode function code block
+bool finds(vector<string> targets, string from) {
+	bool result = false;
+	for (const auto& target : targets) {
+		if (from.find(target) != string::npos) result = true;
+	}
+	return result;
+}
+
+3. paste above r_dialog function
+	string login(string message = "", string name = "", string pass = "") {
+		DialogBuilder p("`o");
+		p.add_label_icon(true, 18, "`0Log-in to your GrowID");
+		p.add_textbox("`4" + message);
+		p.add_spacer(false);
+		p.add_text_input(15, "growid", "GrowID:", name);
+		p.raw("\nadd_text_input_password|pass|Password:|" + pass + "|18|");
+		p.add_spacer(false);
+		p.end_dialog("loginDialog", "Nevermind", "`2Apply");
+		return p.to_string();
+	}
+	void loginDialog(ENetPeer* peer) {
+		DialogBuilder p("`o");
+		p.add_label_icon(true, 18, "`0Welcome to `#" + server_name);
+		p.add_textbox("You need some account before you can playing this server!, do you have one?");
+		p.add_spacer(true);
+		p.add_smalltext("Options:");
+		p.add_button("singup", "`2Create new account");
+		p.add_button("login", "`0I have growid!");
+		p.end_dialog("loginDialog", "", "");
+
+		gamepacket_t pp(1500);
+		pp.Insert("OnDialogRequest"), pp.Insert(p.to_string()), pp.CreatePacket(peer);
+	}
+
+4. search "(auth_(" and replace with this
+case -1:
+{
+	gamepacket_t pp(500);
+	pInfo(peer)->tankIDName = "", pInfo(peer)->tankIDPass = "";
+	if (cch.find("klv") != string::npos) {
+		pp.Insert("OnConsoleMessage");
+		pp.Insert("`4Invalid Credential`o: Your GrowID or Password is not correct. you're session will be reseted!");
+		pp.CreatePacket(peer);
+		player_login(peer, "");
+		return true;
+		/*packet_(peer, "`4Unable to log on: `oThat `wGrowID`` doesn't seem valid, or the password is wrong. If you don't have one, press `wCancel``, un-check `w'I have a GrowID'``, then click `wConnect``.", "Retrieve lost password");
+		packet_(peer, "action|logon_fail");
+		gamepacket_t p;
+		p.Insert("SetHasGrowID"), p.Insert(0), p.Insert(pInfo(peer), p.Insert(""), p.CreatePacket(peer);
+		enet_peer_disconnect_later(peer, 0);*/
+	}
+	else pp.Insert("OnDialogRequest"), pp.Insert(Algorithm::login("Wrong GrowID or Password", pInfo(peer)->tankIDName, pInfo(peer)->tankIDPass)),pp.CreatePacket(peer);
+	
+	return false;
+}
+case 2: return false;
+default:
+{
+	if (cch.find("klv") != string::npos) 
+	{
+		Algorithm::OnSuperMain(peer, item_hash);
+	}
+	/*
+	gamepacket_t pop;
+	pop.Insert("OnSendToServer");
+	pop.Insert(server_port);
+	pop.Insert(2427028);
+	pop.Insert(49983510);
+	pop.Insert("159.223.85.17|0|" + pInfo(peer)->rid);
+	pop.Insert(1);
+	pop.Insert(pInfo(peer)->tankIDName);
+	pop.CreatePacket(peer);
+	*/
+	break;
+}
+}
+
+5. Place after only_role
+pInfo(peer)->isIn = true;
+if (pInfo(peer)->tankIDName.empty()) Algorithm::OnSuperMain(peer, item_hash);
+return true;
