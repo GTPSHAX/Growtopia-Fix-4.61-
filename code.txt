@@ -1,0 +1,36 @@
+1. Search "!player_login" inside the Source.cpp and replace the code block with this
+  if (cch.find("dialog_name|loginDialog") != string::npos && pInfo(peer)->tankIDName.empty()) {
+				vector<string> pkt = explode("|", cch);
+				string btnClick = explode("\n", pkt[3])[0];
+				if (btnClick == "singup") {
+					gamepacket_t pp(500);
+					pp.Insert("OnDialogRequest"), pp.Insert(Algorithm::r_dialog("")), pp.CreatePacket(peer);
+				}
+				else if (btnClick == "login") {
+					gamepacket_t pp(500);
+					pp.Insert("OnDialogRequest"), pp.Insert(Algorithm::login("", "", "")), pp.CreatePacket(peer);
+				}
+				else if (finds({"growid|", "pass|"}, cch)) {
+					pkt[0] = "", pkt[1] = "";
+					pkt[0] = explode("\n", pkt[3])[0];
+					pkt[1] = explode("\n", pkt[4])[0];
+					if (pkt[0].empty() || pkt[1].empty() || (pkt[0].size() + pkt[1].size() <= 4)) {
+						gamepacket_t pp(500);
+						pp.Insert("OnDialogRequest"), pp.Insert(Algorithm::login("Invalid GrowID or Password!", pkt[0], pkt[1])), pp.CreatePacket(peer);
+						break;
+					}
+					string packet = "tankIDName|"+pkt[0]+
+						"\ntankIDPass|"+pkt[1];
+					player_login(peer, packet);
+				}
+				break;
+}
+else if (pInfo(peer)->tankIDName.empty()) {
+				if (pInfo(peer)->world != "") enet_peer_disconnect_later(peer, 0);
+				else if (!pInfo(peer)->isIn) {
+					if (!player_login(peer, cch)) {
+						cout << "Bejir disini!" << endl;
+						break;
+					}
+				}
+}
