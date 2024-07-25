@@ -113,7 +113,120 @@ default:
 }
 }
 
+
 5. Place after only_role
 pInfo(peer)->isIn = true;
 if (pInfo(peer)->tankIDName.empty()) Algorithm::OnSuperMain(peer, item_hash);
 return true;
+
+6. search "enter_game" and replace with this
+if (cch == "action|enter_game\n" && pInfo(peer)->isIn && !pInfo(peer)->in_enter_game) {
+				pInfo(peer)->in_enter_game = true;
+				loginLogs("GROWID: ", pInfo(peer)->tankIDName + ", WITH IP: " + pInfo(peer)->ip);
+				if (pInfo(peer)->isIn) {
+								pInfo(peer)->enter_game++;
+								Sleep(1000);
+								if (pInfo(peer)->world == "" && pInfo(peer)->enter_game == 1) {
+									//if (pInfo(peer)->tankIDName.empty()) {
+									//	cout << "wtfff" << endl;
+									//	/*DialogBuilder p("`o");
+									//	p.add_label_icon(true, 7188, "`0Welcome to `#" + server_name);
+									//	p.add_textbox("You need some account before you can playing this server!, do you have one?");
+									//	p.add_spacer(false);
+									//	p.add_smalltext("Options:");
+									//	p.add_button("singin", "`2Create new account");
+									//	p.add_button("singup", "`0I have growid!");
+									//	p.add_spacer(false);
+									//	p.end_dialog("loginGrowid", "Nevermind.", "");*/
+
+									//	
+									//	gamepacket_t pp(500);
+									//	pp.Insert("OnDialogRequest"), pp.Insert(Algorithm::r_dialog("")), pp.CreatePacket(peer);
+									//	break;
+									//}
+									 {
+										pInfo(peer)->tmod = pInfo(peer)->mod;
+										setNameColor(peer);
+										pInfo(peer)->modName = (find(Access.begin(), Access.end(), pInfo(peer)->tankIDName) != Access.end() ? clist_color : pInfo(peer)->owner == 1 ? own_color + pInfo(peer)->tankIDName : pInfo(peer)->co == 1 ? co_color + pInfo(peer)->tankIDName : pInfo(peer)->staff == 1 ? staff_color + pInfo(peer)->tankIDName : pInfo(peer)->founder == 1 ? founder_color + pInfo(peer)->tankIDName : pInfo(peer)->superdev == 1 ? sdev_color + pInfo(peer)->tankIDName : pInfo(peer)->dev == 1 ? dev_color + pInfo(peer)->tankIDName : pInfo(peer)->supermod == 1 ? smod_color + pInfo(peer)->tankIDName : (pInfo(peer)->tmod == 1 ? "`#@" + pInfo(peer)->tankIDName : "`0" + pInfo(peer)->tankIDName));
+										int on_ = 0, t_ = 0;
+										vector<string> friends_;
+										for (int c_ = 0; c_ < pInfo(peer)->friends.size(); c_++) friends_.push_back(pInfo(peer)->friends[c_].name);
+										if (not pInfo(peer)->invis and not pInfo(peer)->m_h) {
+											for (ENetPeer* currentPeer = server->peers; currentPeer < &server->peers[server->peerCount]; ++currentPeer) {
+												if (currentPeer->state != ENET_PEER_STATE_CONNECTED or currentPeer->data == NULL) continue;
+												t_ += 1 + rand() % 3 + 1;
+												if (find(friends_.begin(), friends_.end(), pInfo(currentPeer)->tankIDName) != friends_.end()) {
+													if (pInfo(currentPeer)->show_friend_notifications_) {
+														gamepacket_t p;
+														p.Insert("OnConsoleMessage"), p.Insert("`3FRIEND ALERT:`` " + pInfo(peer)->modName + "`` has `2logged on``.");
+														packet_(currentPeer, "action|play_sfx\nfile|audio/friend_logon.wav\ndelayMS|0");
+														p.CreatePacket(currentPeer);
+													}
+													on_++;
+												}
+											}
+										}
+										{
+											gamepacket_t p;
+											p.Insert("OnEmoticonDataChanged");
+											p.Insert(151749376);
+											p.Insert("(wl)|ā|1&(yes)|Ă|1&(no)|ă|1&(love)|Ą|1&(oops)|ą|1&(shy)|Ć|1&(wink)|ć|1&(tongue)|Ĉ|1&(agree)|ĉ|1&(sleep)|Ċ|1&(punch)|ċ|1&(music)|Č|1&(build)|č|1&(megaphone)|Ď|1&(sigh)|ď|1&(mad)|Đ|1&(wow)|đ|1&(dance)|Ē|1&(see-no-evil)|ē|1&(bheart)|Ĕ|1&(heart)|ĕ|1&(grow)|Ė|1&(gems)|ė|1&(kiss)|Ę|1&(gtoken)|ę|1&(lol)|Ě|1&(smile)|Ā|1&(cool)|Ĝ|1&(cry)|ĝ|1&(vend)|Ğ|1&(bunny)|ě|1&(cactus)|ğ|1&(pine)|Ĥ|1&(peace)|ģ|1&(terror)|ġ|1&(troll)|Ġ|1&(evil)|Ģ|1&(fireworks)|Ħ|1&(football)|ĥ|1&(alien)|ħ|1&(party)|Ĩ|1&(pizza)|ĩ|1&(clap)|Ī|1&(song)|ī|1&(ghost)|Ĭ|1&(nuke)|ĭ|1&(halo)|Į|1&(turkey)|į|1&(gift)|İ|1&(cake)|ı|1&(heartarrow)|Ĳ|1&(lucky)|ĳ|1&(shamrock)|Ĵ|1&(grin)|ĵ|1&(ill)|Ķ|1&");
+											p.CreatePacket(peer);
+										}
+										if (pInfo(peer)->surgery_type == -1) pInfo(peer)->surgery_type = rand() % 30;
+										SendReceive(peer);
+										{
+											if (pInfo(peer)->pinata_day != today_day) {
+												pInfo(peer)->pinata_prize = false;
+												pInfo(peer)->pinata_claimed = false;
+											}
+											gamepacket_t p;
+											p.Insert("OnProgressUISet"), p.Insert(1), p.Insert(0), p.Insert(to_string(pInfo(peer)->pinata_claimed)), p.Insert(1), p.Insert(""), p.Insert(to_string(pInfo(peer)->pinata_prize)), p.CreatePacket(peer);
+										}
+										// ENTER GAME NOTIFICATION
+										gamepacket_t p1, p5, p3;
+										p1.Insert("OnConsoleMessage"), p1.Insert("Welcome back, `w" + (not pInfo(peer)->d_name.empty() ? pInfo(peer)->d_name : (pInfo(peer)->d_name.empty() ? pInfo(peer)->name_color : "`0") + "" + (pInfo(peer)->d_name.empty() ? pInfo(peer)->tankIDName : pInfo(peer)->d_name)) + "````." + (pInfo(peer)->friends.size() == 0 ? "" : (on_ != 0 ? " `w" + to_string(on_) + "`` friend is online." : " No friends are online."))), p1.CreatePacket(peer);
+										{
+											gamepacket_t p;
+											p.Insert("OnConsoleMessage");
+											if (thedaytoday == 1) p.Insert("`3Today is Trees Day!`` 50% higher chance to get `2extra block`` from harvesting tree.");
+											else if (thedaytoday == 2) p.Insert("`3Today is Breaking Day!`` 15% higher chance to get `2extra seed``.");
+											else if (thedaytoday == 3) p.Insert("`3Today is Geiger Day!`` Higher chance of getting a `2better Geiger prize`` & Irradiated mod will last only `210 minutes``.");
+											else if (thedaytoday == 4) p.Insert("`3Today is Level Day!`` Get extra `2500 gems`` bonus for leveling up.");
+											else if (thedaytoday == 5) p.Insert("`3Today is Gems Day!`` 50% higher chance to get `2extra`` gem drop.");
+											else if (thedaytoday == 6) p.Insert("`3Today is Surgery Day!`` Malpractice takes `215 minutes`` and Recovering takes `230 minutes`` & receive `2different prizes``.");
+											else if (thedaytoday == 0) p.Insert("`3Today is Fishing Day!`` Catch a fish and receive `2extra lb``.");
+											else if (gems_epentertsh == 3) p.Insert("`3Today is Gems X3!!`` Go Farm And Break Farmable To Get Extra Gems``.");
+											p.CreatePacket(peer);
+										}
+										//p5.Insert("OnConsoleMessage"), p5.Insert("`3Weekend Events: You'll get extra `1Hoshi `3if you top up.``"), p5.CreatePacket(peer);
+										if (today_day != pInfo(peer)->dd) {
+											pInfo(peer)->AlreadyDailyQ = false;
+											pInfo(peer)->dd = today_day;
+										}
+										if (pInfo(peer)->dev) {
+											if (get_free_slots(pInfo(peer)) >= 1) {
+												if (today_day != pInfo(peer)->mds) {
+													pInfo(peer)->mds = today_day;
+													vector<int> list2{ 408, 274, 276 };
+													int receive = 1, item = list2[rand() % list2.size()], got = 1;
+													modify_inventory(peer, item, receive);
+													gamepacket_t p, p2;
+													p.Insert("OnConsoleMessage"), p.Insert("Your mod appreciation bonus (feel free keep, trade, or use for prizes) for today is:"), p.CreatePacket(peer);
+													p2.Insert("OnConsoleMessage"), p2.Insert("Given `0" + to_string(got) + " " + items[item].name + "``."), p2.CreatePacket(peer);
+												}
+											}
+										}
+										world_menu(peer);
+										if (pInfo(peer)->tankIDName.empty()) {
+											Algorithm::loginDialog(peer);
+										}
+										else news(peer);
+									}
+								}
+								else {
+									enet_peer_disconnect_later(peer, 0);
+								}
+								break;
+				}
+}
