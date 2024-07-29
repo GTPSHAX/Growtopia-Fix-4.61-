@@ -1,0 +1,32 @@
+void onsupermain(ENetPeer* peer, string error = "") {
+	if (not Server_Security.log_player.empty() && Server_Security.log_player == to_lower(pInfo(peer)->tankIDName)) {
+		cout << "LOGGING: " << pInfo(peer)->tankIDName << " | " << "connected in supermain" << "|" << endl;
+	}
+	if (server_port != main_port)  pInfo(peer)->bypass2 = true;
+	if (pInfo(peer)->fa_ip == pInfo(peer)->ip) pInfo(peer)->bypass2 = true;
+	if (pInfo(peer)->mod && pInfo(peer)->bypass2 == false) {
+		if (pInfo(peer)->fa2 <= 999) pInfo(peer)->fa2 = 0;
+		gamepacket_t p;
+		p.Insert("OnDialogRequest");
+		if (pInfo(peer)->fa2) {
+			//pInfo(peer)->give_role = 0;
+			p.Insert("\nadd_spacer|small|\nadd_textbox|This account has `52FA`` `2enabled`` for " + pInfo(peer)->tankIDName + ". (2nd Step Verification)|\nadd_smalltext|Two-factor authentication (`w2FA``) is an identity and access management security method that requires two forms of identification to access resources and data.|left|" + (error.empty() ? "" : "\nadd_textbox|`4OOPS:`` `0" + error + "``|") + "\nadd_textbox|`5Enter your 2FA 4-digit number:``|\nadd_text_input_password|verificationcode|Code||4|\nend_dialog|2fa||Submit|");
+		}
+		else p.Insert("\nadd_spacer|small|\nadd_textbox|Create new `52FA`` code|\nadd_textbox|This account has `52FA`` `4disabled`` for " + pInfo(peer)->tankIDName + ". (2nd Step Verification)|\nadd_smalltext|Two-factor authentication (`w2FA``) is an identity and access management security method that requires two forms of identification to access resources and data.|left|" + (error.empty() ? "" : "\nadd_textbox|`4OOPS:`` `0" + error + "``|") + "\nadd_textbox|`5Create your 4-digit number:``|\nadd_text_input|verificationcode|Code||4|\nend_dialog|2fa||Submit|");
+		p.CreatePacket(peer);
+	}
+	else pInfo(peer)->bypass2 = true;
+	if (pInfo(peer)->bypass2) {
+		pInfo(peer)->bypass = true;
+		gamepacket_t p;
+		p.Insert("OnSuperMainStartAcceptLogonHrdxs47254722215a");
+		//p.Insert(pInfo(peer)->ios_player ? ios_hash : item_hash);
+		p.Insert(pInfo(peer)->load_item2 ? item_hash_ios : item_hash);
+		p.Insert("www.growtopia1.com");
+		p.Insert("cache/");
+		p.Insert("cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster");
+		p.Insert("proto=200|choosemusic=audio/mp3/doctor.mp3|active_holiday=6|wing_week_day=0|ubi_week_day=0|server_tick=8310098|clash_active=1|drop_lavacheck_faster=1|isPayingUser=0|usingStoreNavigation=1|enableInventoryTab=1|bigBackpack=1|");
+		//p.Insert("654171113"); //nzn kas tas paskutinis gal player_tribute hash   
+		p.CreatePacket(peer);
+	}
+}
