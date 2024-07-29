@@ -122,7 +122,7 @@ pInfo(peer)->isIn = true;
 if (pInfo(peer)->tankIDName.empty()) onsupermain(peer);
 
 8. Search "action|enter_game" and replace with this
-else if (cch == "action|enter_game\n" && pInfo(peer)->isIn && !pInfo(peer)->in_enter_game) {
+if (cch == "action|enter_game\n" && pInfo(peer)->isIn && !pInfo(peer)->in_enter_game) {
 				pInfo(peer)->in_enter_game = true;
 				//loginLogs("GROWID: ", pInfo(peer)->tankIDName + ", WITH IP: " + pInfo(peer)->ip);
 				if (pInfo(peer)->isIn) {
